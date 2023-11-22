@@ -2,7 +2,7 @@
 import { useState } from "react";
 import CSVReader from "./csv-reader";
 
-export default function Budget() {
+export default function BudgetCSV() {
   // CSVファイルの内容を格納する用のstate
   const [uploadedList, setUploadedList] = useState<any>([]);
 
