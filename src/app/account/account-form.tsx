@@ -4,8 +4,8 @@ import {
   Session,
   createClientComponentClient,
 } from "@supabase/auth-helpers-nextjs";
-import { Database } from "../../../types/supabase";
 import Avatar from "./avatar";
+import { Database } from "@/types/supabase";
 
 export default function AccountForm({ session }: { session: Session | null }) {
   const supabase = createClientComponentClient<Database>();
