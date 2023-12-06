@@ -3,12 +3,11 @@ import { useState } from "react";
 import CSVReader from "./csv-reader";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
-import { useRouter } from "next/navigation";
 
 export default function BudgetCSV() {
   const supabase = createClientComponentClient<Database>();
   const [uploadedList, setUploadedList] = useState<any>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const handleUploadCsv = (data: any) => {
@@ -46,10 +45,14 @@ export default function BudgetCSV() {
           .filter(
             (d: Database["public"]["Tables"]["transactionRecords"]["Row"]) =>
               d.date && d.transactionDescription
-          );
+          ); // 必須フィールドの検証
 
-      await supabase.from("transactionRecords").insert(validData);
-      router.push("/budget");
+      const { data, error } = await supabase
+        .from("transactionRecords")
+        .insert(validData);
+
+      console.log({ data });
+      console.log({ error });
     } catch (e) {
       alert("Error loading user data!");
     } finally {
