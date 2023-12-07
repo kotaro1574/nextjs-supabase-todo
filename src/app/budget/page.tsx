@@ -33,14 +33,10 @@ export default async function Budget() {
       for (let month = startMonth; month <= endMonth; month++) {
         // MMを2桁に整形する
         let monthString = (month + 1).toString().padStart(2, "0");
-        months.push(`${monthString}/%/${year}`);
+        months.push(`${monthString}${year}`);
       }
     }
     return months;
-  };
-
-  const removePattern = (inputString: string): string => {
-    return inputString.replace("/%/", "");
   };
 
   return (
@@ -50,14 +46,11 @@ export default async function Budget() {
           {getMonthsBetweenDates(
             oldestRecord?.date ?? "",
             newestRecord?.date ?? ""
-          ).map((m) => {
-            const month = removePattern(m);
-            return (
-              <li key={month}>
-                <Link href={`budget/${month}`}>{month}</Link>
-              </li>
-            );
-          })}
+          ).map((month) => (
+            <li key={month}>
+              <Link href={`budget/${month}`}>{month}</Link>
+            </li>
+          ))}
         </ul>
       </div>
     </div>
