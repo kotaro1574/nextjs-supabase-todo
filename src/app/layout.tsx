@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { AiOutlineDollar, AiOutlineUser } from "react-icons/ai";
-import Logo from "public/logo.svg";
+import CanadaLogo from "public/canada-logo.svg";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,9 +21,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="flex min-h-screen">
-          <div className="w-34 bg-emerald-900 text-white">
-            <div>
-              <Logo className="w-20 h-20" />
+          <div className="w-20 bg-emerald-600 text-white">
+            <div className="py-4">
+              <CanadaLogo className="w-16 h-8 mx-auto bg-white" />
             </div>
             <ul>
               <li>
