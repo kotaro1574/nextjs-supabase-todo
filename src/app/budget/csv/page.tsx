@@ -31,6 +31,10 @@ export default function BudgetCSV() {
     try {
       setLoading(true);
 
+      const existingData = await supabase
+        .from("transactionRecords")
+        .select("*");
+
       const validData: Database["public"]["Tables"]["transactionRecords"]["Row"][] =
         uploadedList
           .map(
@@ -48,7 +52,21 @@ export default function BudgetCSV() {
               d.date && d.transactionDescription
           );
 
-      await supabase.from("transactionRecords").insert(validData);
+      const newData = validData.filter(
+        (newRecord) =>
+          !existingData?.data?.some(
+            (existingRecord) =>
+              existingRecord.date === newRecord.date &&
+              existingRecord.transactionDescription ===
+                newRecord.transactionDescription
+          )
+      );
+
+      // 新しいデータのみを挿入
+      if (newData.length > 0) {
+        await supabase.from("transactionRecords").insert(newData);
+      }
+
       router.push("/budget");
     } catch (e) {
       alert("Error loading user data!");
