@@ -1,135 +1,64 @@
 import { Database } from "@/types/supabase";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
+import Link from "next/link";
 
 export default async function Budget() {
   const supabase = createServerComponentClient<Database>({ cookies });
-  const { data: transactionRecords } = await supabase
+  const { data: newestData, error: newestError } = await supabase
     .from("transactionRecords")
     .select("*")
-    .ilike("date", "11/%/2023");
+    .order("date", { ascending: false }) // 日付を降順に
+    .limit(1);
 
-  if (!transactionRecords) {
-    return <p>No posts found.</p>;
-  }
+  const { data: oldestData, error: oldestError } = await supabase
+    .from("transactionRecords")
+    .select("*")
+    .order("date", { ascending: true }) // 日付を昇順に
+    .limit(1);
 
-  const totalWithdrawals = transactionRecords
-    .reduce((total, record) => {
-      if (!record.withdrawals) return total;
-      return total + record.withdrawals ?? 0;
-    }, 0)
-    .toFixed(2);
+  const newestRecord = newestData && newestData[0];
+  const oldestRecord = oldestData && oldestData[0];
 
-  const totalDeposits = transactionRecords
-    .reduce((total, record) => {
-      if (!record.deposits) return total;
-      return total + record.deposits ?? 0;
-    }, 0)
-    .toFixed(2);
+  const getMonthsBetweenDates = (
+    startDate: string,
+    endDate: string
+  ): string[] => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    let months = [];
+    for (let year = start.getFullYear(); year <= end.getFullYear(); year++) {
+      let startMonth = year === start.getFullYear() ? start.getMonth() : 0;
+      let endMonth = year === end.getFullYear() ? end.getMonth() : 11;
+      for (let month = startMonth; month <= endMonth; month++) {
+        // MMを2桁に整形する
+        let monthString = (month + 1).toString().padStart(2, "0");
+        months.push(`${monthString}/%/${year}`);
+      }
+    }
+    return months;
+  };
+
+  const removePattern = (inputString: string): string => {
+    return inputString.replace("/%/", "");
+  };
 
   return (
     <div className="p-8">
       <div className="text-gray-600 dark:text-white">
-        {transactionRecords.length > 0 ? (
-          <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    日付
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    取引内容
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    💸 出金 💸
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    💰 預金 💰
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Balance
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {transactionRecords.map((transactionRecord, i) => (
-                  <tr
-                    key={`${transactionRecord.date}-${transactionRecord.transactionDescription}-${i}`}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {transactionRecord.date}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {transactionRecord.transactionDescription}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {transactionRecord.withdrawals
-                          ? `💸 ${transactionRecord.withdrawals}`
-                          : "-"}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {transactionRecord.deposits
-                          ? `💰 ${transactionRecord.deposits}`
-                          : "-"}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {transactionRecord.balance}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                <tr className="font-bold">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">🤑🤑🤑🤑🤑</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">💰💰💰 合計 ☞ </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      😭 {totalWithdrawals}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      😆 {totalDeposits}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">-</div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div>no data</div>
-        )}
+        <ul>
+          {getMonthsBetweenDates(
+            oldestRecord?.date ?? "",
+            newestRecord?.date ?? ""
+          ).map((m) => {
+            const month = removePattern(m);
+            return (
+              <li key={month}>
+                <Link href={`budget/${month}`}>{month}</Link>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );

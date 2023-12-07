@@ -2,12 +2,21 @@ import { Database } from "@/types/supabase";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-export default async function BudgetMonth() {
+export default async function BudgetMonth({
+  params,
+}: {
+  params: { month: string };
+}) {
+  const insertPatternAfterSecondChar = (inputString: string): string => {
+    return inputString.slice(0, 2) + "/%/" + inputString.slice(2);
+  };
+  const month = insertPatternAfterSecondChar(params.month);
+
   const supabase = createServerComponentClient<Database>({ cookies });
   const { data: transactionRecords } = await supabase
     .from("transactionRecords")
     .select("*")
-    .ilike("date", "11/%/2023");
+    .ilike("date", month);
 
   if (!transactionRecords) {
     return <p>No posts found.</p>;
