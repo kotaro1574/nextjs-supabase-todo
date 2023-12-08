@@ -15,10 +15,7 @@ export default function AuthForm() {
       theme="dark"
       showLinks={false}
       providers={[]}
-      redirectTo={
-        process.env.NEXT_PUBLIC_REDIRECT_URL ??
-        "http://localhost:3000/auth/callback"
-      }
+      redirectTo={process.env.NEXT_PUBLIC_REDIRECT_URL ?? ""}
     />
   );
 }
