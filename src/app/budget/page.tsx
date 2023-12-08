@@ -39,6 +39,10 @@ export default async function Budget() {
     return months;
   };
 
+  const insertSlashAfterSecondChar = (inputString: string): string => {
+    return inputString.slice(0, 2) + "/" + inputString.slice(2);
+  };
+
   return (
     <div className="p-8">
       <div className="text-gray-600 dark:text-white">
@@ -47,8 +51,10 @@ export default async function Budget() {
             oldestRecord?.date ?? "",
             newestRecord?.date ?? ""
           ).map((month) => (
-            <li key={month}>
-              <Link href={`budget/${month}`}>{month}</Link>
+            <li key={month} className="p-2">
+              <Link href={`budget/${month}`} className="hover:text-emerald-600">
+                {insertSlashAfterSecondChar(month)}
+              </Link>
             </li>
           ))}
         </ul>
