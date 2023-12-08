@@ -22,19 +22,21 @@ export default async function BudgetMonth({
     return <p>No posts found.</p>;
   }
 
-  const totalWithdrawals = transactionRecords
-    .reduce((total, record) => {
-      if (!record.withdrawals) return total;
-      return total + record.withdrawals ?? 0;
-    }, 0)
-    .toFixed(2);
+  const totalWithdrawals = transactionRecords.reduce((total, record) => {
+    if (!record.withdrawals) return total;
+    return total + record.withdrawals ?? 0;
+  }, 0);
+  const totalDeposits = transactionRecords.reduce((total, record) => {
+    if (!record.deposits) return total;
+    return total + record.deposits ?? 0;
+  }, 0);
 
-  const totalDeposits = transactionRecords
-    .reduce((total, record) => {
-      if (!record.deposits) return total;
-      return total + record.deposits ?? 0;
-    }, 0)
-    .toFixed(2);
+  // 仮のカナダドルから日本円への変換レート
+  const exchangeRateCADtoJPY = 106; // 1カナダドル = 90日本円と仮定
+
+  // カナダドルの合計を日本円に変換
+  const totalWithdrawalsJPY = totalWithdrawals * exchangeRateCADtoJPY;
+  const totalDepositsJPY = totalDeposits * exchangeRateCADtoJPY;
 
   return (
     <div className="p-8">
@@ -94,39 +96,87 @@ export default async function BudgetMonth({
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
                         {transactionRecord.withdrawals
-                          ? `💸 ${transactionRecord.withdrawals}`
+                          ? `💸 ${transactionRecord.withdrawals.toLocaleString(
+                              "en-CA",
+                              { style: "currency", currency: "CAD" }
+                            )}`
                           : "-"}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
                         {transactionRecord.deposits
-                          ? `💰 ${transactionRecord.deposits}`
+                          ? `💰 ${transactionRecord.deposits.toLocaleString(
+                              "en-CA",
+                              { style: "currency", currency: "CAD" }
+                            )}`
                           : "-"}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {transactionRecord.balance}
+                        {transactionRecord.balance
+                          ? transactionRecord.balance.toLocaleString("en-CA", {
+                              style: "currency",
+                              currency: "CAD",
+                            })
+                          : "-"}
                       </div>
                     </td>
                   </tr>
                 ))}
                 <tr className="font-bold">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">🤑🤑🤑🤑🤑</div>
+                    <div className="text-sm text-gray-900">🇨🇦🇨🇦🇨🇦</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">💰💰💰 合計 ☞ </div>
+                    <div className="text-sm text-gray-900">💰💰💰 total</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      😭 {totalWithdrawals}
+                      😭{" "}
+                      {totalWithdrawals.toLocaleString("en-CA", {
+                        style: "currency",
+                        currency: "CAD",
+                      })}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      😆 {totalDeposits}
+                      😆{" "}
+                      {totalDeposits.toLocaleString("en-CA", {
+                        style: "currency",
+                        currency: "CAD",
+                      })}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">-</div>
+                  </td>
+                </tr>
+                <tr className="font-bold">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">🇯🇵🇯🇵🇯🇵</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">💰💰💰 合計</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      😭{" "}
+                      {totalWithdrawalsJPY.toLocaleString("ja-JP", {
+                        style: "currency",
+                        currency: "JPY",
+                      })}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      😆{" "}
+                      {totalDepositsJPY.toLocaleString("ja-JP", {
+                        style: "currency",
+                        currency: "JPY",
+                      })}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
