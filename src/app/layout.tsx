@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { AiOutlineDollar, AiOutlineUser } from "react-icons/ai";
+import { BsFiletypeCsv } from "react-icons/bs";
 import CanadaLogo from "public/canada-logo.svg";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -32,6 +33,14 @@ export default function RootLayout({
                   className="p-2 inline-block hover:bg-emerald-800"
                 >
                   <AiOutlineDollar className="text-3xl mx-auto" />
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={"/csv"}
+                  className="p-2 inline-block hover:bg-emerald-800"
+                >
+                  <BsFiletypeCsv className="text-3xl mx-auto" />
                 </Link>
               </li>
               <li>
