@@ -81,7 +81,7 @@ export default async function BudgetMonth({
               <tbody className="bg-white divide-y divide-gray-200">
                 {transactionRecords.map((transactionRecord, i) => (
                   <tr
-                    key={`${transactionRecord.date}-${transactionRecord.transactionDescription}-${i}`}
+                    key={`${transactionRecord.date}-${transactionRecord.transaction_description}-${i}`}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
@@ -90,7 +90,7 @@ export default async function BudgetMonth({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {transactionRecord.transactionDescription}
+                        {transactionRecord.transaction_description}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
