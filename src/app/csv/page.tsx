@@ -16,7 +16,7 @@ export default function Csv() {
       .map((d: any) => {
         return {
           date: d[0],
-          transactionDescription: d[1],
+          transaction_description: d[1],
           withdrawals: d[2],
           deposits: d[3],
           balance: d[4],
@@ -31,6 +31,13 @@ export default function Csv() {
     try {
       setLoading(true);
 
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const user = session?.user;
+
+      if (!user) return;
+
       const existingData = await supabase
         .from("transactionRecords")
         .select("*");
@@ -44,12 +51,13 @@ export default function Csv() {
                 withdrawals: d.withdrawals || 0,
                 deposits: d.deposits || 0,
                 balance: d.balance || 0,
+                user_id: user.id,
               };
             }
           )
           .filter(
             (d: Database["public"]["Tables"]["transactionRecords"]["Row"]) =>
-              d.date && d.transactionDescription
+              d.date && d.transaction_description
           );
 
       const newData = validData.filter(
@@ -57,8 +65,8 @@ export default function Csv() {
           !existingData?.data?.some(
             (existingRecord) =>
               existingRecord.date === newRecord.date &&
-              existingRecord.transactionDescription ===
-                newRecord.transactionDescription
+              existingRecord.transaction_description ===
+                newRecord.transaction_description
           )
       );
 

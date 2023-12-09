@@ -50,7 +50,8 @@ export interface Database {
           date: string
           deposits: number | null
           id: string
-          transactionDescription: string | null
+          transaction_description: string | null
+          user_id: string | null
           withdrawals: number | null
         }
         Insert: {
@@ -58,7 +59,8 @@ export interface Database {
           date: string
           deposits?: number | null
           id?: string
-          transactionDescription?: string | null
+          transaction_description?: string | null
+          user_id?: string | null
           withdrawals?: number | null
         }
         Update: {
@@ -66,10 +68,19 @@ export interface Database {
           date?: string
           deposits?: number | null
           id?: string
-          transactionDescription?: string | null
+          transaction_description?: string | null
+          user_id?: string | null
           withdrawals?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transactionRecords_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
