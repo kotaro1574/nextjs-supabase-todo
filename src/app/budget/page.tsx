@@ -3,6 +3,8 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import Link from "next/link";
 
+export const revalidate = 60;
+
 export default async function Budget() {
   const supabase = createServerComponentClient<Database>({ cookies });
   const { data: newestData, error: newestError } = await supabase
