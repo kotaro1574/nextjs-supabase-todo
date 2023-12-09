@@ -135,7 +135,7 @@ export default function Csv() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {d.transactionDescription}
+                          {d.transaction_description}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
