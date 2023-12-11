@@ -7,15 +7,27 @@ export const revalidate = 60;
 
 export default async function Budget() {
   const supabase = createServerComponentClient<Database>({ cookies });
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user;
+
+  if (!user) {
+    return <p>ログインが必要です。</p>;
+  }
+
   const { data: newestData, error: newestError } = await supabase
     .from("transactionRecords")
     .select("*")
+    .eq("user_id", user.id)
     .order("date", { ascending: false }) // 日付を降順に
     .limit(1);
 
   const { data: oldestData, error: oldestError } = await supabase
     .from("transactionRecords")
     .select("*")
+    .eq("user_id", user.id)
     .order("date", { ascending: true }) // 日付を昇順に
     .limit(1);
 

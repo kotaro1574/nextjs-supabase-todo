@@ -13,9 +13,20 @@ export default async function BudgetMonth({
   const month = insertPatternAfterSecondChar(params.month);
 
   const supabase = createServerComponentClient<Database>({ cookies });
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user;
+
+  if (!user) {
+    return <p>ログインが必要です。</p>;
+  }
+
   const { data: transactionRecords } = await supabase
     .from("transactionRecords")
     .select("*")
+    .eq("user_id", user.id)
     .ilike("date", month);
 
   if (!transactionRecords) {
